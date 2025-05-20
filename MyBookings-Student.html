@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Bookings</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #C9E4DE;
+      margin: 0;
+      padding: 20px;
+    }
+
+    #langBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 8px 16px;
+      background-color: #FAEDCB;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      font-size: 32px;
+      margin-top: 20px;
+    }
+
+    .booking-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      background-color: #e57373;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #d32f2f;
+    }
+
+    .no-bookings {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 20px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="langBtn">العربية</button>
+  <h1 id="pageTitle">My Bookings</h1>
+
+  <div id="noBookingsMsg" class="no-bookings" style="display: none;">
+    <p id="noBookingsText">You have no bookings yet.</p>
+  </div>
+
+  <div id="bookingsContainer"></div>
+
+  <script>
+    let currentLang = "en";
+
+    const translations = {
+      title: { en: "My Bookings", ar: "حجوزاتي" },
+      noBookings: { en: "You have no bookings yet.", ar: "لا توجد حجوزات حتى الآن." },
+      teacher: { en: "Teacher", ar: "المعلم" },
+      date: { en: "Date", ar: "التاريخ" },
+      time: { en: "Time", ar: "الوقت" },
+      duration: { en: "Duration (mins)", ar: "المدة (بالدقائق)" },
+      type: { en: "Session Type", ar: "نوع الجلسة" },
+      payment: { en: "Payment Method", ar: "طريقة الدفع" },
+      location: { en: "Location", ar: "الموقع" },
+      cancel: { en: "Cancel", ar: "إلغاء" }
+    };
+
+    const savedLang = localStorage.getItem("lang");
+    if (savedLang) currentLang = savedLang;
+
+    function setLanguage() {
+      document.getElementById("pageTitle").innerText = translations.title[currentLang];
+      document.getElementById("noBookingsText").innerText = translations.noBookings[currentLang];
+      document.getElementById("langBtn").innerText = currentLang === "en" ? "العربية" : "English";
+      renderBookings();
+    }
+
+    document.getElementById("langBtn").addEventListener("click", () => {
+      currentLang = currentLang === "en" ? "ar" : "en";
+      localStorage.setItem("lang", currentLang);
+      setLanguage();
+    });
+
+    function renderBookings() {
+      const bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+      const studentEmail = localStorage.getItem("studentEmail");
+
+      const studentBookings = studentEmail
+        ? bookings.filter(b => b.email === studentEmail)
+        : [];
+
+      const container = document.getElementById("bookingsContainer");
+      const noBookingsMsg = document.getElementById("noBookingsMsg");
+      container.innerHTML = "";
+
+      if (studentBookings.length === 0) {
+        noBookingsMsg.style.display = "block";
+        return;
+      } else {
+        noBookingsMsg.style.display = "none";
+      }
+
+      const table = document.createElement("table");
+      table.className = "booking-table";
+
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>${translations.teacher[currentLang]}</th>
+            <th>${translations.date[currentLang]}</th>
+            <th>${translations.time[currentLang]}</th>
+            <th>${translations.duration[currentLang]}</th>
+            <th>${translations.type[currentLang]}</th>
+            <th>${translations.payment[currentLang]}</th>
+            <th>${translations.location[currentLang]}</th>
+            <th>${translations.cancel[currentLang]}</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${studentBookings.map((b, i) => {
+            const bookingDate = new Date(b.date);
+            const formattedDate = bookingDate.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ar-EG', {
+              weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            return `
+              <tr>
+                <td>${b.teacher}</td>
+                <td>${formattedDate}</td>
+                <td>${b.time}</td>
+                <td>${b.duration}</td>
+                <td>${b.sessionType}</td>
+                <td>${b.paymentMethod || "-"}</td>
+                <td><a href="${b.googleMaps || "#"}" target="_blank">${b.googleMaps ? "Link" : "-"}</a></td>
+                <td><button class="btn" onclick="cancelBooking('${b.teacher}', '${b.time}')">${translations.cancel[currentLang]}</button></td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      `;
+      container.appendChild(table);
+    }
+
+    function cancelBooking(teacher, time) {
+      let bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+      const studentEmail = localStorage.getItem("studentEmail");
+      bookings = bookings.filter(b => !(b.teacher === teacher && b.time === time && b.email === studentEmail));
+      localStorage.setItem("bookings", JSON.stringify(bookings));
+      alert(currentLang === "en" ? "Booking cancelled." : "تم إلغاء الحجز.");
+      renderBookings();
+    }
+
+    setLanguage();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #C9E4DE; /* Updated background color */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      direction: ltr;
+    }
+
+    .lang-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 14px;
+      background-color: #FAEDCB;
+      color: black;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container {
+      text-align: center;
+      background-color: white;
+      padding: 40px 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 24px;
+      color: black; /* Updated title text color to black */
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin: 12px 0;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background-color: #FAEDCB; /* Updated button color */
+      color: black; /* Updated button text color to black */
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #e5d7b7; /* Slightly darker shade for hover */
+    }
+  </style>
+</head>
+<body>
+  <button class="lang-toggle" onclick="toggleLanguage()">عربي</button>
+
+  <div class="container">
+    <h1 id="title">Sign Up</h1>
+    <button class="btn" onclick="location.href='google-signup.html'" id="studentBtn">Parent or Student</button>
+    <button class="btn" onclick="location.href='teacher-signup.html'" id="teacherBtn">Teacher</button>
+  </div>
+
+  <script>
+    let currentLang = 'en';
+
+    function toggleLanguage() {
+      const title = document.getElementById('title');
+      const studentBtn = document.getElementById('studentBtn');
+      const teacherBtn = document.getElementById('teacherBtn');
+      const toggle = document.querySelector('.lang-toggle');
+
+      if (currentLang === 'en') {
+        title.textContent = 'إنشاء حساب';
+        studentBtn.textContent = 'ولي أمر أو طالب';
+        teacherBtn.textContent = 'معلم';
+        toggle.textContent = 'English';
+        document.body.style.direction = 'rtl';
+        document.documentElement.lang = 'ar';
+        currentLang = 'ar';
+      } else {
+        title.textContent = 'Sign Up';
+        studentBtn.textContent = 'Parent or Student';
+        teacherBtn.textContent = 'Teacher';
+        toggle.textContent = 'عربي';
+        document.body.style.direction = 'ltr';
+        document.documentElement.lang = 'en';
+        currentLang = 'en';
+      }
+    }
+  </script>
+</body>
+</html>

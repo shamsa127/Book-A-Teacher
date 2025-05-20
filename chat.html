@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat with Teacher</title>
+  <style>
+    body {
+      background-color: #C9E4DE;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .chat-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      background-color: #FAEDCB;
+      color: black;
+      padding: 18px;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+
+    .message-box {
+      height: 300px;
+      overflow-y: auto;
+      padding: 15px;
+      border-bottom: 1px solid #EEE;
+      background-color: #F9F9F9;
+    }
+
+    .input-area {
+      display: flex;
+      border-top: 1px solid #EEE;
+      padding: 10px;
+      background-color: #FAFAFA;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 20px;
+      border: 1px solid #CCC;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .input-area button {
+      background-color: #FAEDCB;
+      color: black;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 18px;
+      margin-left: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .input-area button:hover,
+    .form-section button:hover {
+      background-color: #f2dfb0;
+    }
+
+    .form-section {
+      padding: 20px;
+      background: #FFFFFF;
+      border-top: 1px solid #EEE;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .form-section label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-section select,
+    .form-section input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #CCC;
+      font-size: 14px;
+    }
+
+    .form-section button {
+      background-color: #FAEDCB;
+      color: black;
+      border: none;
+      padding: 12px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .form-section .hidden {
+      display: none;
+    }
+
+    .form-section p {
+      margin: 6px 0;
+    }
+
+    .emoji {
+      font-size: 1.2em;
+      margin-left: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header" id="chatHeader">Chat with Teacher</div>
+
+    <div class="message-box" id="chatBox"></div>
+
+    <div class="input-area">
+      <input type="text" id="messageInput" placeholder="Type your message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <div class="form-section" id="bookingForm">
+      <label for="duration">⏱️ Duration:</label>
+      <select id="duration">
+        <option value="60">60 Minutes</option>
+        <option value="120">120 Minutes</option>
+        <option value="180">180 Minutes</option>
+      </select>
+
+      <label for="lessonDate">📅 Select Date:</label>
+      <select id="lessonDate" onchange="updateTimes()"></select>
+
+      <label for="lessonTime">🕒 Select Time:</label>
+      <select id="lessonTime"></select>
+
+      <label for="sessionType">📍 Session Type:</label>
+      <select id="sessionType" onchange="toggleSessionOptions()">
+        <option value="">Choose</option>
+        <option value="online">Online 📱</option>
+        <option value="in-person">In-Person 🏡</option>
+      </select>
+
+      <div id="locationDiv" class="hidden">
+        <label for="locationLink">📍 Drop Your Location Link:</label>
+        <input type="text" id="locationLink" placeholder="Paste location link here">
+
+        <label for="paymentMethod">💳 Payment Method:</label>
+        <select id="paymentMethod" onchange="handlePaymentMethod()">
+          <option value="">Choose</option>
+          <option value="cash">Cash 💰</option>
+          <option value="card">Card 💳</option>
+        </select>
+      </div>
+
+      <div id="cardPaymentDiv" class="hidden">
+        <p><strong>🏦 Bank:</strong> <span id="bankName">—</span></p>
+        <p><strong>🔢 IBAN:</strong> <span id="ibanNumber">—</span></p>
+      </div>
+
+      <button onclick="confirmBooking()">Confirm Booking ✅</button>
+    </div>
+  </div>
+
+  <script>
+    let bookingEndTime = null;
+
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const chatBox = document.getElementById('chatBox');
+      const msg = input.value.trim();
+      if (msg) {
+        const p = document.createElement('p');
+        p.textContent = "You: " + msg;
+        chatBox.appendChild(p);
+        input.value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    function toggleSessionOptions() {
+      const sessionType = document.getElementById('sessionType').value;
+      const locationDiv = document.getElementById('locationDiv');
+      const cardPaymentDiv = document.getElementById('cardPaymentDiv');
+      const bankName = document.getElementById('bankName');
+      const ibanNumber = document.getElementById('ibanNumber');
+
+      if (sessionType === "in-person") {
+        locationDiv.classList.remove("hidden");
+        cardPaymentDiv.classList.add("hidden");
+      } else if (sessionType === "online") {
+        locationDiv.classList.add("hidden");
+        cardPaymentDiv.classList.remove("hidden");
+        bankName.textContent = "Teacher Bank";
+        ibanNumber.textContent = "AE000000000000000000000";
+      } else {
+        locationDiv.classList.add("hidden");
+        cardPaymentDiv.classList.add("hidden");
+      }
+    }
+
+    function handlePaymentMethod() {
+      const method = document.getElementById('paymentMethod').value;
+      const cardPaymentDiv = document.getElementById('cardPaymentDiv');
+      const bankName = document.getElementById('bankName');
+      const ibanNumber = document.getElementById('ibanNumber');
+      if (method === "card") {
+        cardPaymentDiv.classList.remove("hidden");
+        bankName.textContent = "Teacher Bank";
+        ibanNumber.textContent = "AE000000000000000000000";
+      } else {
+        cardPaymentDiv.classList.add("hidden");
+      }
+    }
+
+    function updateTimes() {
+      const timeSelect = document.getElementById('lessonTime');
+      timeSelect.innerHTML = "";
+      const times = ["10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM", "6:00 PM"];
+      times.forEach(time => {
+        const opt = document.createElement("option");
+        opt.value = time;
+        opt.textContent = time;
+        timeSelect.appendChild(opt);
+      });
+    }
+
+    function populateDates() {
+      const dateSelect = document.getElementById("lessonDate");
+      dateSelect.innerHTML = "";
+      const today = new Date();
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        const option = document.createElement("option");
+        option.value = date.toISOString().split("T")[0];
+        option.textContent = date.toDateString();
+        dateSelect.appendChild(option);
+      }
+      updateTimes();
+    }
+
+    function confirmBooking() {
+      const duration = parseInt(document.getElementById('duration').value);
+      const date = document.getElementById('lessonDate').value;
+      const time = document.getElementById('lessonTime').value;
+      const sessionType = document.getElementById('sessionType').value;
+
+      if (!date || !time || !sessionType) {
+        alert("Please complete all booking details.");
+        return;
+      }
+
+      const chatBox = document.getElementById('chatBox');
+      const msg = document.createElement('p');
+      msg.textContent = `📚 Booking Confirmed: ${duration} mins on ${date} at ${time} (${sessionType})`;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Calculate booking end time
+      const timeParts = time.split(/[: ]/);
+      let hour = parseInt(timeParts[0]);
+      const minute = parseInt(timeParts[1]);
+      if (timeParts[2] === "PM" && hour < 12) hour += 12;
+      if (timeParts[2] === "AM" && hour === 12) hour = 0;
+
+      const endTime = new Date(date + "T" + hour.toString().padStart(2, "0") + ":" + minute.toString().padStart(2, "0") + ":00");
+      endTime.setMinutes(endTime.getMinutes() + duration);
+      bookingEndTime = endTime;
+
+      // Store in localStorage
+      localStorage.setItem("bookingEndTime", bookingEndTime.toISOString());
+      document.getElementById("bookingForm").classList.add("hidden");
+    }
+
+    function checkBookingStatus() {
+      const storedTime = localStorage.getItem("bookingEndTime");
+      if (storedTime) {
+        const now = new Date();
+        const endTime = new Date(storedTime);
+        if (now >= endTime) {
+          localStorage.removeItem("bookingEndTime");
+          document.getElementById("bookingForm").classList.remove("hidden");
+        } else {
+          document.getElementById("bookingForm").classList.add("hidden");
+        }
+      }
+    }
+
+    populateDates();
+    checkBookingStatus();
+    setInterval(checkBookingStatus, 60000); // Check every minute
+  </script>
+</body>
+</html>

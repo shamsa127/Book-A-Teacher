@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parent or Student Login</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #C9E4DE;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    .login-container {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    form input {
+      display: block;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    form button,
+    .lang-toggle-btn {
+      padding: 0.6rem 1.2rem;
+      background-color: #FAEDCB;
+      color: #333;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    form button:hover,
+    .lang-toggle-btn:hover {
+      background-color: #e5d7b7;
+    }
+    .or-divider {
+      margin: 1rem 0;
+      font-weight: bold;
+      color: #666;
+    }
+    #googleSignInButton {
+      margin-top: 1rem;
+    }
+    .signup-link {
+      margin-top: 1rem;
+      font-size: 14px;
+      color: #666;
+    }
+    .signup-link a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+    .lang-toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+  <button class="lang-toggle-btn" onclick="toggleLanguage()">العربية / English</button>
+
+  <div class="login-container">
+    <h1 id="title">Parent or Student Login</h1>
+
+    <div id="googleSignInButton"></div>
+
+    <div class="or-divider" id="orText">or</div>
+
+    <form onsubmit="manualLogin(event)">
+      <input type="email" placeholder="Email" id="email" required />
+      <input type="password" placeholder="Password" id="password" required />
+      <input type="text" placeholder="Full Name" id="fullName" required />
+      <button type="submit" id="submitBtn">Login</button>
+    </form>
+
+    <div class="signup-link">
+      <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+    </div>
+  </div>
+
+  <script>
+    let currentLang = 'en';
+
+    function toggleLanguage() {
+      if (currentLang === 'en') {
+        document.getElementById('title').innerText = 'تسجيل الدخول لولي الأمر أو الطالب';
+        document.getElementById('orText').innerText = 'أو';
+        document.getElementById('email').placeholder = 'البريد الإلكتروني';
+        document.getElementById('password').placeholder = 'كلمة المرور';
+        document.getElementById('fullName').placeholder = 'الاسم الكامل';
+        document.getElementById('submitBtn').innerText = 'تسجيل الدخول';
+        document.querySelector('.signup-link p').innerHTML = 'ليس لديك حساب؟ <a href="signup.html">إنشاء حساب</a>';
+        currentLang = 'ar';
+      } else {
+        document.getElementById('title').innerText = 'Parent or Student Login';
+        document.getElementById('orText').innerText = 'or';
+        document.getElementById('email').placeholder = 'Email';
+        document.getElementById('password').placeholder = 'Password';
+        document.getElementById('fullName').placeholder = 'Full Name';
+        document.getElementById('submitBtn').innerText = 'Login';
+        document.querySelector('.signup-link p').innerHTML = 'Don\'t have an account? <a href="signup.html">Sign up</a>';
+        currentLang = 'en';
+      }
+    }
+
+    function handleCredentialResponse(response) {
+      const idToken = response.credential;
+      console.log("Encoded JWT ID token: " + idToken);
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userRole', 'student');
+      window.location.href = 'index.html';
+    }
+
+    function renderGoogleButton() {
+      google.accounts.id.initialize({
+        client_id: '517961306953-uc2pmelkvuq0ji44moebff6786hsci21.apps.googleusercontent.com',
+        callback: handleCredentialResponse,
+      });
+      google.accounts.id.renderButton(
+        document.getElementById("googleSignInButton"),
+        { theme: "outline", size: "large" }
+      );
+    }
+
+    window.onload = () => {
+      if (window.google && google.accounts) {
+        renderGoogleButton();
+      }
+    };
+
+    function manualLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const fullName = document.getElementById('fullName').value.trim();
+
+      if (!email || !password || !fullName) {
+        alert(currentLang === 'ar' ? 'الرجاء تعبئة جميع الحقول' : 'Please fill all fields');
+        return;
+      }
+
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userRole', 'student');
+      localStorage.setItem('studentEmail', email);
+      alert(currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح!' : 'Login successful!');
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

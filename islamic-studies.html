@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Islamic Studies Teachers</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #C9E4DE;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .language-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 14px;
+      background-color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #0077cc;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    .language-toggle:hover {
+      background-color: #d0ebff;
+    }
+
+    h1 {
+      text-align: center;
+      color: #005fa3;
+    }
+
+    .teacher-card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 10px auto;
+      max-width: 400px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .teacher-card h2 {
+      margin: 0 0 10px 0;
+      color: #007acc;
+    }
+
+    .teacher-card p {
+      margin: 5px 0;
+    }
+
+    .chat-button {
+      background-color: #FAEDCB;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .chat-button:hover {
+      background-color: #f0d39f;
+    }
+
+    .go-back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 8px 14px;
+      background-color: #FAEDCB;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #0077cc;
+      cursor: pointer;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    .go-back-button:hover {
+      background-color: #d0ebff;
+    }
+  </style>
+</head>
+<body>
+  <button class="go-back-button" onclick="goBack()">
+    <span id="goBackBtnText">Go Back</span>
+  </button>
+
+  <button class="language-toggle" onclick="toggleLanguage()" id="langToggleBtn">عربي</button>
+  <h1 id="pageTitle">Islamic Studies Teachers</h1>
+  <div id="teacherList"></div>
+
+  <script>
+    let isArabic = false;
+    const teacherList = document.getElementById("teacherList");
+    const storedTeachers = JSON.parse(localStorage.getItem("teachers")) || [];
+
+    function displayTeachers() {
+      teacherList.innerHTML = "";
+      const islamicTeachers = storedTeachers.filter(t =>
+        t.subject?.toLowerCase().trim() === "islamic studies"
+      );
+
+      if (islamicTeachers.length === 0) {
+        teacherList.innerHTML = `<p style='text-align:center;'>${isArabic ? "لا يوجد معلمين للتربية الإسلامية بعد." : "No Islamic Studies teachers available yet."}</p>`;
+      } else {
+        islamicTeachers.forEach(teacher => {
+          const card = document.createElement("div");
+          card.className = "teacher-card";
+          card.innerHTML = ` 
+            <h2>${isArabic ? "معلم" : "Teacher"}: ${teacher.name}</h2>
+            <p><strong>${isArabic ? "الصف:" : "Grade:"}</strong> ${teacher.grade}</p>
+            <p><strong>${isArabic ? "البريد الإلكتروني:" : "Email:"}</strong> ${teacher.email}</p>
+            <p><strong>${isArabic ? "طريقة التدريس:" : "Teaching Method:"}</strong> ${isArabic ? "عن بعد و حضوري" : "Online & In-person"}</p>
+            <button class="chat-button" onclick="startChat('${teacher.name}')">
+              ${isArabic ? "محادثة" : "Chat"}
+            </button>
+          `;
+          teacherList.appendChild(card);
+        });
+      }
+    }
+
+    function startChat(name) {
+      let chats = JSON.parse(localStorage.getItem("chats")) || [];
+
+      // Prevent duplicate entries
+      if (!chats.includes(name)) {
+        chats.push(name);
+        localStorage.setItem("chats", JSON.stringify(chats));
+      }
+
+      // Redirect to chat page
+      window.location.href = `chat.html?teacher=${encodeURIComponent(name)}`;
+    }
+
+    function toggleLanguage() {
+      isArabic = !isArabic;
+      document.documentElement.lang = isArabic ? "ar" : "en";
+      document.documentElement.dir = isArabic ? "rtl" : "ltr";
+      document.getElementById("langToggleBtn").innerText = isArabic ? "English" : "عربي";
+      document.getElementById("pageTitle").innerText = isArabic ? "معلمين التربية الإسلامية" : "Islamic Studies Teachers";
+      document.getElementById("goBackBtnText").innerText = isArabic ? "الرجوع" : "Go Back";
+      displayTeachers();
+    }
+
+    function goBack() {
+      window.location.href = "all-subjects.html";
+    }
+
+    // Initialize page
+    displayTeachers();
+  </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Sign Up</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #C9E4DE;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .signup-container {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    form input {
+      display: block;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    form button {
+      padding: 0.6rem 1.2rem;
+      background-color: #FAEDCB;
+      color: #333;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    form button:hover {
+      background-color: #e5d7b7;
+    }
+
+    .signup-link {
+      margin-top: 1rem;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .signup-link a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    .lang-toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px;
+      background-color: #FAEDCB;
+      color: #333;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .lang-toggle-btn:hover {
+      background-color: #e5d7b7;
+    }
+
+    #googleSignInBtn {
+      margin-top: 1rem;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Toggle Button -->
+  <button class="lang-toggle-btn" onclick="toggleLanguage()">العربية / English</button>
+
+  <div class="signup-container">
+    <h1 id="title">Student Sign Up</h1>
+
+    <!-- Sign-up Form -->
+    <form onsubmit="handleSignup(event)">
+      <input type="email" placeholder="Email" id="email" required />
+      <input type="password" placeholder="Password" id="password" required />
+      <input type="text" placeholder="Full Name" id="fullName" required />
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <!-- Google Sign-Up -->
+    <button id="googleSignInBtn" onclick="handleGoogleSignup()">Sign up with Google</button>
+
+    <!-- Already have an account? -->
+    <div class="signup-link">
+      <p>Already have an account? <a href="student-login.html">Log in</a></p>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXpvGweeW3kpxoNxMte2IRQmsZCQaDup0",
+      authDomain: "book-a-teacher-6e3ef.firebaseapp.com",
+      projectId: "book-a-teacher-6e3ef",
+      storageBucket: "book-a-teacher-6e3ef.appspot.com",
+      messagingSenderId: "224882976771",
+      appId: "1:224882976771:web:61b9cac898c5b947f4c636",
+      measurementId: "G-LH09RYQPHX"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    let currentLang = 'en';
+
+    function toggleLanguage() {
+      if (currentLang === 'en') {
+        document.getElementById('title').innerText = 'تسجيل طالب جديد';
+        document.getElementById('email').placeholder = 'البريد الإلكتروني';
+        document.getElementById('password').placeholder = 'كلمة المرور';
+        document.getElementById('fullName').placeholder = 'الاسم الكامل';
+        document.querySelector('form button').innerText = 'إنشاء حساب';
+        document.querySelector('.signup-link p').innerHTML = 'هل لديك حساب؟ <a href="student-login.html">تسجيل الدخول</a>';
+        document.getElementById('googleSignInBtn').innerText = 'التسجيل باستخدام جوجل';
+        currentLang = 'ar';
+      } else {
+        document.getElementById('title').innerText = 'Student Sign Up';
+        document.getElementById('email').placeholder = 'Email';
+        document.getElementById('password').placeholder = 'Password';
+        document.getElementById('fullName').placeholder = 'Full Name';
+        document.querySelector('form button').innerText = 'Sign Up';
+        document.querySelector('.signup-link p').innerHTML = 'Already have an account? <a href="student-login.html">Log in</a>';
+        document.getElementById('googleSignInBtn').innerText = 'Sign up with Google';
+        currentLang = 'en';
+      }
+    }
+
+    async function handleSignup(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const fullName = document.getElementById('fullName').value;
+
+      try {
+        await auth.createUserWithEmailAndPassword(email, password);
+        await auth.currentUser.updateProfile({ displayName: fullName });
+        window.location.href = "student-login.html";
+      } catch (error) {
+        alert("Error signing up: " + error.message);
+      }
+    }
+
+    async function handleGoogleSignup() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        await auth.signInWithPopup(provider);
+        window.location.href = "student-login.html";
+      } catch (error) {
+        alert("Google Sign-up error: " + error.message);
+      }
+    }
+  </script>
+</body>
+</html>

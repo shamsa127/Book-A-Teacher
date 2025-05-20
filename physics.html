@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Physics Teachers</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #C9E4DE;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #005fa3;
+    }
+
+    .teacher-card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 10px auto;
+      max-width: 400px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: left;
+    }
+
+    .teacher-card h2 {
+      margin: 0 0 10px 0;
+      color: #007acc;
+    }
+
+    .teacher-card p {
+      margin: 5px 0;
+    }
+
+    .chat-button {
+      background-color: #FAEDCB;
+      color: #005fa3;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .chat-button:hover {
+      background-color: #e5d6b7;
+    }
+
+    .language-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 14px;
+      background-color: #FAEDCB;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #005fa3;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    .language-toggle:hover {
+      background-color: #e5d6b7;
+    }
+
+    .go-back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 8px 14px;
+      background-color: #FAEDCB;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #007ACC;
+      cursor: pointer;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    .go-back-button:hover {
+      background-color: #e5d6b7;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Go Back Button -->
+  <button class="go-back-button" onclick="goBack()">
+    <span id="goBackBtnText">Go Back</span>
+  </button>
+
+  <button class="language-toggle" onclick="toggleLanguage()" id="langToggleBtn">عربي</button>
+  <h1 id="page-title">Physics Teachers</h1>
+  <div id="teacherList"></div>
+
+  <script>
+    let isArabic = false;
+
+    function getTranslatedName(name, gender) {
+      if (!isArabic) return name;
+      if (gender === 'female') return "المعلمة " + name;
+      if (gender === 'male') return "الأستاذ " + name;
+      return "الأستاذ/ة " + name;
+    }
+
+    function translateTeacherCard(card, teacher) {
+      const modeLabel = isArabic ? "طريقة التدريس" : "Mode";
+      let modeValue = teacher.mode || (isArabic ? "غير محدد" : "Not specified");
+
+      card.innerHTML = `
+        <h2>${getTranslatedName(teacher.name, teacher.gender)}</h2>
+        <p><strong>${isArabic ? 'الصف' : 'Grade'}:</strong> ${teacher.grade || ''}</p>
+        <p><strong>${isArabic ? 'البريد الإلكتروني' : 'Email'}:</strong> ${teacher.email}</p>
+        <p><strong>${modeLabel}:</strong> ${modeValue}</p>
+        <button class="chat-button" onclick='startChat(${JSON.stringify(teacher)})'>
+          ${isArabic ? 'محادثة' : 'Chat'}
+        </button>
+      `;
+    }
+
+    function renderTeachers() {
+      const teacherList = document.getElementById("teacherList");
+      teacherList.innerHTML = "";
+
+      const storedTeachers = JSON.parse(localStorage.getItem("teachers")) || [];
+
+      const physicsTeachers = storedTeachers.filter(t =>
+        t.approved === true &&
+        t.subject &&
+        t.subject.trim().toLowerCase() === "physics"
+      );
+
+      if (physicsTeachers.length === 0) {
+        teacherList.innerHTML = `<p style='text-align:center;'>${isArabic ? "لا يوجد معلمو فيزياء حالياً." : "No physics teachers available yet."}</p>`;
+      } else {
+        physicsTeachers.forEach(teacher => {
+          const card = document.createElement("div");
+          card.className = "teacher-card";
+          translateTeacherCard(card, teacher);
+          teacherList.appendChild(card);
+        });
+      }
+    }
+
+    function toggleLanguage() {
+      isArabic = !isArabic;
+      document.documentElement.lang = isArabic ? "ar" : "en";
+      document.documentElement.dir = isArabic ? "rtl" : "ltr";
+
+      document.getElementById("langToggleBtn").innerText = isArabic ? "English" : "عربي";
+      document.getElementById("page-title").innerText = isArabic ? "معلمو الفيزياء" : "Physics Teachers";
+      document.getElementById("goBackBtnText").innerText = isArabic ? "الرجوع" : "Go Back";
+
+      renderTeachers();
+    }
+
+    function startChat(teacher) {
+      const chatData = {
+        name: teacher.name,
+        email: teacher.email,
+        timestamp: new Date().toISOString()
+      };
+
+      const existingChats = JSON.parse(localStorage.getItem("mainChats")) || [];
+      const alreadyExists = existingChats.some(c => c.email === teacher.email);
+
+      if (!alreadyExists) {
+        existingChats.push(chatData);
+        localStorage.setItem("mainChats", JSON.stringify(existingChats));
+      }
+
+      window.location.href = `chat.html?teacher=${encodeURIComponent(teacher.email)}`;
+    }
+
+    function goBack() {
+      window.location.href = "all-subjects.html";
+    }
+
+    renderTeachers();
+  </script>
+
+</body>
+</html>

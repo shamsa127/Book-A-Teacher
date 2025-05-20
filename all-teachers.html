@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>All Teachers</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #C9E4DE;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .language-toggle {
+      margin: 20px;
+      align-self: flex-end;
+      margin-right: 30px;
+    }
+
+    button.toggle-btn {
+      padding: 8px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 8px;
+      background-color: #FAEDCB;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    h2 {
+      margin: 20px 0 10px;
+      font-size: 24px;
+      color: #333;
+      text-align: center;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #FAEDCB;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: #f0dfb5;
+    }
+
+    .teacher-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      padding: 0 20px 40px;
+      width: 100%;
+      max-width: 1400px;
+      box-sizing: border-box;
+    }
+
+    .teacher-card {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 20px;
+      width: 300px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .teacher-card h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      color: #333;
+    }
+
+    .teacher-card p {
+      margin: 4px 0;
+      color: #555;
+      font-size: 16px;
+    }
+
+    .chat-button {
+      margin-top: 15px;
+      background-color: #FAEDCB;
+      padding: 10px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .chat-button:hover {
+      background-color: #f0dfb5;
+    }
+  </style>
+</head>
+<body>
+  <button class="back-button" onclick="location.href='index.html'" id="backBtn">Go Back</button>
+
+  <div class="language-toggle">
+    <button class="toggle-btn" onclick="toggleLanguage()">عربي / English</button>
+  </div>
+
+  <h2 id="title">Meet All Our Teachers</h2>
+
+  <div class="teacher-grid" id="teacherGrid"></div>
+
+  <script>
+    const teachers = [
+      { name: "Ms. Ayesha", subject: "Islamic Studies", mode: "Online & in-person" },
+      { name: "Mr. Khaled", subject: "Physics", mode: "Online & in-person" },
+      { name: "Ms. Lina", subject: "English", mode: "Online & in-person" },
+      { name: "Mr. Omar", subject: "Mathematics", mode: "Online" },
+      { name: "Ms. Fatima", subject: "Biology", mode: "In-person" },
+      { name: "Mr. Zayed", subject: "Chemistry", mode: "Online & in-person" },
+      { name: "Ms. Nour", subject: "Science", mode: "Online" },
+      { name: "Ms. Amal", subject: "Arabic", mode: "Online & in-person" },
+      { name: "Mr. Pierre", subject: "French", mode: "In-person" },
+      { name: "Ms. Chen", subject: "Chinese", mode: "Online" }
+    ];
+
+    const translations = {
+      en: {
+        title: "Meet All Our Teachers",
+        backBtn: "Go Back",
+        chat: "Chat"
+      },
+      ar: {
+        title: "تعرّف على جميع معلمينا",
+        backBtn: "العودة",
+        chat: "دردشة"
+      }
+    };
+
+    let currentLang = 'en';
+
+    function renderTeachers() {
+      const grid = document.getElementById("teacherGrid");
+      grid.innerHTML = '';
+      teachers.forEach(teacher => {
+        const div = document.createElement("div");
+        div.className = "teacher-card";
+        div.innerHTML = `
+          <h3>${teacher.name}</h3>
+          <p>${teacher.subject}</p>
+          <p>${teacher.mode}</p>
+          <button class="chat-button" onclick="location.href='chat.html?teacher=${encodeURIComponent(teacher.name)}'">${translations[currentLang].chat}</button>
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'ar' : 'en';
+      document.getElementById("title").innerText = translations[currentLang].title;
+      document.getElementById("backBtn").innerText = translations[currentLang].backBtn;
+      renderTeachers();
+    }
+
+    // Initial render
+    renderTeachers();
+  </script>
+</body>
+</html>

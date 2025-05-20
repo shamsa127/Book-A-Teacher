@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Bookings</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #C9E4DE;
+      margin: 0;
+      padding: 20px;
+    }
+
+    #langBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 8px 16px;
+      background-color: #FAEDCB;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      font-size: 32px;
+      margin-top: 20px;
+    }
+
+    .booking-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      background-color: #e57373;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #d32f2f;
+    }
+
+    .no-bookings, #loginPrompt {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 20px;
+      color: #333;
+    }
+
+    #loginPrompt button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #FAEDCB;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #loginPrompt button:hover {
+      background-color: #f1d07f;
+    }
+
+  </style>
+</head>
+<body>
+
+  <button id="langBtn">العربية</button>
+  <h1 id="pageTitle">My Bookings</h1>
+
+  <div id="loginPrompt" style="display:none;">
+    <p id="loginPromptText">Please log in to view your bookings.</p>
+    <button onclick="goToLogin()">Go to Login</button>
+  </div>
+
+  <div id="noBookingsMsg" class="no-bookings" style="display: none;">
+    <p id="noBookingsText">No students have booked sessions with you yet.</p>
+  </div>
+
+  <div id="bookingsContainer"></div>
+
+  <script>
+    let currentLang = "en";
+
+    const translations = {
+      title: { en: "My Bookings", ar: "حجوزاتي" },
+      noBookings: { en: "No students have booked sessions with you yet.", ar: "لم يقم أي طالب بحجز حصة معك بعد." },
+      name: { en: "Student Name", ar: "اسم الطالب" },
+      email: { en: "Email", ar: "البريد الإلكتروني" },
+      date: { en: "Date", ar: "التاريخ" },
+      time: { en: "Time", ar: "الوقت" },
+      duration: { en: "Duration (mins)", ar: "المدة (بالدقائق)" },
+      type: { en: "Session Type", ar: "نوع الجلسة" },
+      payment: { en: "Payment Method", ar: "طريقة الدفع" },
+      location: { en: "Location", ar: "الموقع" },
+      cancel: { en: "Cancel", ar: "إلغاء" },
+      loginPrompt: { en: "Please log in to view your bookings.", ar: "يرجى تسجيل الدخول لمشاهدة حجوزاتك." },
+      goToLogin: { en: "Go to Login", ar: "الذهاب إلى تسجيل الدخول" }
+    };
+
+    // Load language from localStorage or default
+    const savedLang = localStorage.getItem("lang");
+    if (savedLang) currentLang = savedLang;
+
+    function setLanguage() {
+      document.getElementById("pageTitle").innerText = translations.title[currentLang];
+      document.getElementById("noBookingsText").innerText = translations.noBookings[currentLang];
+      document.getElementById("loginPromptText").innerText = translations.loginPrompt[currentLang];
+      document.querySelector("#loginPrompt button").innerText = translations.goToLogin[currentLang];
+      document.getElementById("langBtn").innerText = currentLang === "en" ? "العربية" : "English";
+      renderBookings();
+    }
+
+    document.getElementById("langBtn").addEventListener("click", () => {
+      currentLang = currentLang === "en" ? "ar" : "en";
+      localStorage.setItem("lang", currentLang);
+      setLanguage();
+    });
+
+    function goToLogin() {
+      window.location.href = "teacher-login.html"; // Change to your actual login page URL
+    }
+
+    function renderBookings() {
+      // Check if logged in
+      const isLoggedIn = localStorage.getItem("isLoggedIn");
+      if (isLoggedIn !== "true") {
+        // Show login prompt, hide bookings and no booking message
+        document.getElementById("loginPrompt").style.display = "block";
+        document.getElementById("bookingsContainer").style.display = "none";
+        document.getElementById("noBookingsMsg").style.display = "none";
+        return;
+      }
+
+      // Hide login prompt, show bookings container
+      document.getElementById("loginPrompt").style.display = "none";
+      document.getElementById("bookingsContainer").style.display = "block";
+
+      const bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+      const teacherName = localStorage.getItem("selectedTeacher");
+      const teacherBookings = teacherName ? bookings.filter(b => b.teacher === teacherName) : [];
+
+      const container = document.getElementById("bookingsContainer");
+      const noBookingsMsg = document.getElementById("noBookingsMsg");
+      container.innerHTML = "";
+
+      if (teacherBookings.length === 0) {
+        noBookingsMsg.style.display = "block";
+        return;
+      } else {
+        noBookingsMsg.style.display = "none";
+      }
+
+      const table = document.createElement("table");
+      table.className = "booking-table";
+
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>${translations.name[currentLang]}</th>
+            <th>${translations.email[currentLang]}</th>
+            <th>${translations.date[currentLang]}</th>
+            <th>${translations.time[currentLang]}</th>
+            <th>${translations.duration[currentLang]}</th>
+            <th>${translations.type[currentLang]}</th>
+            <th>${translations.payment[currentLang]}</th>
+            <th>${translations.location[currentLang]}</th>
+            <th>${translations.cancel[currentLang]}</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${teacherBookings.map((b, i) => {
+            const bookingDate = new Date(b.date);
+            const formattedDate = bookingDate.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ar-EG', {
+              weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            return `
+              <tr>
+                <td>${b.studentName || "N/A"}</td>
+                <td>${b.email}</td>
+                <td>${formattedDate}</td>
+                <td>${b.time}</td>
+                <td>${b.duration}</td>
+                <td>${b.sessionType}</td>
+                <td>${b.paymentMethod || "-"}</td>
+                <td><a href="${b.googleMaps || "#"}" target="_blank">${b.googleMaps ? "Link" : "-"}</a></td>
+                <td><button class="btn" onclick="cancelBooking('${b.email}', '${b.time}')">${translations.cancel[currentLang]}</button></td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      `;
+      container.appendChild(table);
+    }
+
+    function cancelBooking(email, time) {
+      let bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+      bookings = bookings.filter(b => !(b.email === email && b.time === time));
+      localStorage.setItem("bookings", JSON.stringify(bookings));
+      alert(currentLang === "en" ? "Booking cancelled." : "تم إلغاء الحجز.");
+      renderBookings();
+    }
+
+    setLanguage();
+  </script>
+
+</body>
+</html>

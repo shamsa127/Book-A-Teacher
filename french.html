@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>French Teachers</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #C9E4DE;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    h1 {
+      color: #007acc;
+      margin-bottom: 30px;
+    }
+
+    .teacher-card {
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin: 20px auto;
+      max-width: 500px;
+      text-align: left;
+    }
+
+    .teacher-name {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .teacher-grade {
+      font-size: 1em;
+      color: #555;
+      margin: 10px 0;
+    }
+
+    .teacher-mode {
+      font-size: 0.9em;
+      color: #777;
+      margin-top: 10px;
+    }
+
+    .book-button {
+      background-color: #FAEDCB;
+      color: #333;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    .book-button:hover {
+      background-color: #f0d7a1;
+    }
+
+    .language-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 14px;
+      background-color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #0077cc;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    .language-toggle:hover {
+      background-color: #d0ebff;
+    }
+
+    .go-back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 8px 14px;
+      background-color: #FAEDCB;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #0077cc;
+      cursor: pointer;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    .go-back-button:hover {
+      background-color: #d0ebff;
+    }
+
+    #teachers-container {
+      min-height: 200px;
+    }
+
+    #no-teachers-msg {
+      color: #777;
+      font-style: italic;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="go-back-button" onclick="goBack()">
+    <span id="goBackBtnText">Go Back</span>
+  </button>
+
+  <button class="language-toggle" onclick="toggleLanguage()" id="langToggleBtn">عربي</button>
+  <h1 id="page-title">French Teachers</h1>
+
+  <div id="teachers-container">
+    <!-- Dynamic teacher cards will be inserted here -->
+  </div>
+
+  <script>
+    let isArabic = false;
+
+    // Example structure of a teacher object:
+    // {
+    //   name: "Ms. Amina",
+    //   grade: 9,
+    //   mode: "Online & In-person",
+    //   subject: "French"
+    // }
+
+    // Function to translate fixed UI texts
+    function translateUI() {
+      document.getElementById("langToggleBtn").innerText = isArabic ? "English" : "عربي";
+      document.getElementById("page-title").innerText = isArabic ? "معلمين اللغة الفرنسية" : "French Teachers";
+      document.getElementById("goBackBtnText").innerText = isArabic ? "الرجوع" : "Go Back";
+      // Translate no teachers message if visible
+      const noTeachersMsg = document.getElementById("no-teachers-msg");
+      if (noTeachersMsg) {
+        noTeachersMsg.innerText = isArabic ? "لا يوجد معلمين معتمدين لهذا المادة." : "No approved teachers for this subject.";
+      }
+    }
+
+    // Translate teacher card texts dynamically
+    function translateTeacherCard(card, teacher) {
+      const nameEl = card.querySelector('.teacher-name');
+      const gradeEl = card.querySelector('.teacher-grade');
+      const modeEl = card.querySelector('.teacher-mode');
+      const buttonEl = card.querySelector('button');
+
+      if (isArabic) {
+        // For names, you might want to store the Arabic version in teacher object or
+        // here is a simple fallback: add "المعلم/ة" prefix
+        let arabicName = teacher.name;
+        if (teacher.name.startsWith("Ms.")) {
+          arabicName = teacher.name.replace("Ms.", "المعلمة");
+        } else if (teacher.name.startsWith("Mr.")) {
+          arabicName = teacher.name.replace("Mr.", "المعلم");
+        }
+        nameEl.innerText = arabicName;
+
+        gradeEl.innerText = `الصف: ${teacher.grade}`;
+        modeEl.innerText = "عن بعد و حضوري"; // hardcoded translation
+        buttonEl.innerText = "محادثة";
+      } else {
+        nameEl.innerText = teacher.name;
+        gradeEl.innerText = `Grade: ${teacher.grade}`;
+        modeEl.innerText = teacher.mode;
+        buttonEl.innerText = "Chat";
+      }
+    }
+
+    // Load teachers from localStorage, filter by subject 'French'
+    function loadTeachers() {
+      const teachersContainer = document.getElementById('teachers-container');
+      teachersContainer.innerHTML = ''; // clear
+
+      // Retrieve all approved teachers from localStorage (assumed stored as 'approvedTeachers')
+      // approvedTeachers = [{name, grade, mode, subject, arabicName?}, ...]
+      let approvedTeachers = JSON.parse(localStorage.getItem('approvedTeachers') || '[]');
+
+      // Filter by French subject
+      let frenchTeachers = approvedTeachers.filter(t => t.subject && t.subject.toLowerCase() === 'french');
+
+      if (frenchTeachers.length === 0) {
+        const msg = document.createElement('div');
+        msg.id = "no-teachers-msg";
+        msg.style.textAlign = 'center';
+        msg.style.marginTop = '50px';
+        msg.style.color = '#777';
+        msg.style.fontStyle = 'italic';
+        msg.innerText = isArabic ? "لا يوجد معلمين معتمدين لهذا المادة." : "No approved teachers for this subject.";
+        teachersContainer.appendChild(msg);
+        return;
+      }
+
+      frenchTeachers.forEach((teacher, index) => {
+        const card = document.createElement('div');
+        card.className = 'teacher-card';
+
+        card.innerHTML = `
+          <div class="teacher-name">${teacher.name}</div>
+          <div class="teacher-grade">Grade: ${teacher.grade}</div>
+          <div class="teacher-mode">${teacher.mode}</div>
+          <button class="book-button">Chat</button>
+        `;
+
+        // Add chat button event listener
+        card.querySelector('button').addEventListener('click', () => {
+          startChat(teacher.name);
+        });
+
+        teachersContainer.appendChild(card);
+
+        // Translate the card if needed
+        translateTeacherCard(card, teacher);
+      });
+    }
+
+    // Toggle language between English and Arabic
+    function toggleLanguage() {
+      isArabic = !isArabic;
+      document.documentElement.lang = isArabic ? "ar" : "en";
+      document.documentElement.dir = isArabic ? "rtl" : "ltr";
+      translateUI();
+      loadTeachers();
+    }
+
+    // On chat button click: save chat and redirect to chat page with teacher param
+    function startChat(teacherName) {
+      let chats = JSON.parse(localStorage.getItem('teacherChats') || '[]');
+      if (!chats.includes(teacherName)) {
+        chats.push(teacherName);
+        localStorage.setItem('teacherChats', JSON.stringify(chats));
+      }
+      window.location.href = `chat.html?teacher=${encodeURIComponent(teacherName)}`;
+    }
+
+    // Go back to all subjects page
+    function goBack() {
+      window.location.href = "all-subjects.html";
+    }
+
+    // Initial load
+    translateUI();
+    loadTeachers();
+  </script>
+
+</body>
+</html>

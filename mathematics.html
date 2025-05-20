@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mathematics Teachers</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #C9E4DE;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #007acc;
+      margin-bottom: 30px;
+    }
+
+    .teacher-card {
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin: 20px auto;
+      max-width: 500px;
+      text-align: left;
+    }
+
+    .teacher-name {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .teacher-info {
+      font-size: 1em;
+      color: #555;
+      margin: 10px 0;
+    }
+
+    .chat-button {
+      background-color: #FAEDCB;
+      color: #333;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+    }
+
+    .chat-button:hover {
+      background-color: #e4d6ae;
+    }
+
+    .language-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 14px;
+      background-color: #FAEDCB;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #333;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    .language-toggle:hover {
+      background-color: #e4d6ae;
+    }
+
+    .go-back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 8px 14px;
+      background-color: #FAEDCB;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #007ACC;
+      cursor: pointer;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    .go-back-button:hover {
+      background-color: #e4d6ae;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="go-back-button" onclick="goBack()">
+    <span id="goBackBtnText">Go Back</span>
+  </button>
+
+  <button class="language-toggle" onclick="toggleLanguage()" id="langToggleBtn">عربي</button>
+  <h1 id="page-title">Mathematics Teachers</h1>
+
+  <div id="teacherContainer"></div>
+
+  <script>
+    let isArabic = false;
+
+    function toggleLanguage() {
+      isArabic = !isArabic;
+      document.documentElement.lang = isArabic ? "ar" : "en";
+      document.documentElement.dir = isArabic ? "rtl" : "ltr";
+
+      document.getElementById("langToggleBtn").innerText = isArabic ? "English" : "عربي";
+      document.getElementById("page-title").innerText = isArabic ? "معلمين الرياضيات" : "Mathematics Teachers";
+      document.getElementById("goBackBtnText").innerText = isArabic ? "الرجوع" : "Go Back";
+
+      renderTeachers();
+    }
+
+    function goBack() {
+      window.location.href = "all-subjects.html";
+    }
+
+    function startChat(name, email) {
+      const chatData = {
+        name: name,
+        email: email,
+        timestamp: new Date().toISOString()
+      };
+
+      const existingChats = JSON.parse(localStorage.getItem("mainChats")) || [];
+
+      const alreadyExists = existingChats.some(c => c.email === chatData.email);
+      if (!alreadyExists) {
+        existingChats.push(chatData);
+        localStorage.setItem("mainChats", JSON.stringify(existingChats));
+      }
+
+      window.location.href = "chat.html?teacher=" + encodeURIComponent(email);
+    }
+
+    function renderTeachers() {
+      const teacherContainer = document.getElementById("teacherContainer");
+      teacherContainer.innerHTML = "";
+
+      const allTeachers = JSON.parse(localStorage.getItem("teachers")) || [];
+
+      const mathTeachers = allTeachers.filter(teacher =>
+        teacher.subject === "Mathematics" && teacher.approved === true
+      );
+
+      mathTeachers.forEach((teacher, index) => {
+        const card = document.createElement("div");
+        card.className = "teacher-card";
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "teacher-name";
+        nameDiv.innerText = isArabic ? (teacher.gender === "female" ? "المعلمة " : "الأستاذ ") + teacher.name : (teacher.gender === "female" ? "Ms. " : "Mr. ") + teacher.name;
+
+        const gradeDiv = document.createElement("div");
+        gradeDiv.className = "teacher-info";
+        gradeDiv.innerText = isArabic ? `الصف: ${teacher.grade}` : `Grade: ${teacher.grade}`;
+
+        const modeDiv = document.createElement("div");
+        modeDiv.className = "teacher-info";
+        modeDiv.innerText = isArabic ? "عن بعد و حضوري" : "Online & In-person";
+
+        const chatBtn = document.createElement("button");
+        chatBtn.className = "chat-button";
+        chatBtn.innerText = isArabic ? "محادثة" : "Chat";
+        chatBtn.onclick = () => startChat(teacher.name, teacher.email);
+
+        card.appendChild(nameDiv);
+        card.appendChild(gradeDiv);
+        card.appendChild(modeDiv);
+        card.appendChild(chatBtn);
+        teacherContainer.appendChild(card);
+      });
+    }
+
+    // Initial load
+    renderTeachers();
+  </script>
+
+</body>
+</html>

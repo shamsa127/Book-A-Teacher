@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      text-align: center;
+      padding: 50px;
+    }
+
+    .admin-content {
+      display: none;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #0077b6;
+    }
+
+    .counter {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    .btn {
+      padding: 5px 10px;
+      background-color: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background-color: #005f8a;
+    }
+
+    #langBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 5px 10px;
+      background-color: #faedcb;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="langBtn">العربية</button>
+
+  <div class="admin-content" id="adminContent">
+    <h1 data-en="Admin Dashboard" data-ar="لوحة تحكم المشرف">Admin Dashboard</h1>
+    <p data-en="Welcome, Admin. You now have access to restricted data and controls."
+       data-ar="مرحبًا، أيها المشرف. لديك الآن حق الوصول إلى البيانات والضوابط الخاصة.">
+       Welcome, Admin. You now have access to restricted data and controls.
+    </p>
+
+    <div class="counter">
+      <p><span data-en="Parent/Student Accounts" data-ar="حسابات أولياء الأمور/الطلاب">Parent/Student Accounts</span>: <span id="parentCount">0</span></p>
+      <p><span data-en="Teacher Accounts" data-ar="حسابات المعلمين">Teacher Accounts</span>: <span id="teacherCount">0</span></p>
+      <p><span data-en="Website Visits" data-ar="زيارات الموقع">Website Visits</span>: <span id="visitCount">0</span></p>
+    </div>
+
+    <h2 data-en="Teachers Awaiting Activation" data-ar="المعلمون في انتظار التفعيل">Teachers Awaiting Activation</h2>
+    <table>
+      <thead>
+        <tr>
+          <th data-en="Teacher Name" data-ar="اسم المعلم">Teacher Name</th>
+          <th data-en="Email" data-ar="البريد الإلكتروني">Email</th>
+          <th data-en="Receipt" data-ar="الإيصال">Receipt</th>
+          <th data-en="Certificate" data-ar="الشهادة الجامعية">Certificate</th>
+          <th data-en="Action" data-ar="الإجراء">Action</th>
+        </tr>
+      </thead>
+      <tbody id="teacherList"></tbody>
+    </table>
+  </div>
+
+  <script>
+    // Admin Access
+    const adminPassword = "BookATeacher.ae";
+    const userInput = prompt("Enter admin password:");
+    if (userInput !== adminPassword) {
+      alert("Access denied.");
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("adminContent").style.display = "block";
+    }
+
+    // Translation Support
+    let currentLang = "en";
+    document.getElementById("langBtn").addEventListener("click", () => {
+      currentLang = currentLang === "en" ? "ar" : "en";
+      document.querySelectorAll("[data-en]").forEach(el => {
+        el.innerText = el.getAttribute(`data-${currentLang}`);
+      });
+      document.getElementById("langBtn").innerText = currentLang === "en" ? "العربية" : "English";
+    });
+
+    // Load Stats
+    document.getElementById("parentCount").innerText = localStorage.getItem("parentCount") || 0;
+    document.getElementById("teacherCount").innerText = localStorage.getItem("teacherCount") || 0;
+    document.getElementById("visitCount").innerText = localStorage.getItem("visitCount") || 0;
+
+    // Load Teachers
+    const teachers = JSON.parse(localStorage.getItem("teachers") || "[]");
+    const teacherList = document.getElementById("teacherList");
+
+    function renderTeachers() {
+      teacherList.innerHTML = "";
+      teachers.forEach((teacher, index) => {
+        if (!teacher.approved) {
+          const receiptCell = teacher.receiptUrl
+            ? `<a class="btn" href="${teacher.receiptUrl}" target="_blank" data-en="View" data-ar="عرض">View</a>`
+            : `<span data-en="No Receipt" data-ar="لا يوجد إيصال">No Receipt</span>`;
+
+          const certificateCell = teacher.certificateUrl
+            ? `<a class="btn" href="${teacher.certificateUrl}" target="_blank" data-en="View" data-ar="عرض">View</a>`
+            : `<span data-en="No Certificate" data-ar="لا يوجد شهادة">No Certificate</span>`;
+
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${teacher.name}</td>
+            <td>${teacher.email}</td>
+            <td>${receiptCell}</td>
+            <td>${certificateCell}</td>
+            <td><button class="btn" onclick="approveTeacher(${index})" data-en="Approve" data-ar="تفعيل">Approve</button></td>
+          `;
+          teacherList.appendChild(row);
+        }
+      });
+    }
+
+    function approveTeacher(index) {
+      teachers[index].approved = true;
+      localStorage.setItem("teachers", JSON.stringify(teachers));
+
+      // Update approved count
+      const approvedCount = teachers.filter(t => t.approved).length;
+      localStorage.setItem("teacherCount", approvedCount);
+
+      alert("Teacher approved!");
+      renderTeachers();
+    }
+
+    renderTeachers();
+  </script>
+
+</body>
+</html>

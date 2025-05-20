@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Subscription</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #C9E4DE;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+    }
+
+    .modern-button {
+      background-color: #FAEDCB;
+      color: #333;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .modern-button:hover {
+      background-color: #f7e1ac;
+    }
+
+    .language-toggle {
+      max-width: 600px;
+      margin: 0 auto 20px;
+    }
+
+    .language-toggle button {
+      width: 100%;
+    }
+
+    .sub-heading {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="language-toggle">
+    <button class="modern-button" id="toggleLang" onclick="toggleLanguage()">Switch to العربية</button>
+  </div>
+
+  <div class="container">
+    <h1 id="title">Teacher Subscription</h1>
+
+    <div>
+      <p id="intro">Welcome to our platform! To ensure that your profile is visible to students, we require a subscription. You can choose from different subscription plans:</p>
+    </div>
+
+    <div>
+      <div class="sub-heading" id="subDetails">Subscription Details:</div>
+      <p id="duration">Duration: 8 weeks</p>
+      <p id="cost">Cost: 50 AED</p>
+      <p id="duration1">Duration: 1 year</p>
+      <p id="cost1">Cost: 250 AED</p>
+      <p id="benefitsTitle">Subscription benefits include:</p>
+      <ul>
+        <li id="benefit1">Visibility on the platform for students to find and book lessons.</li>
+        <li id="benefit2">Access to update your profile and add lesson times and availability.</li>
+        <li id="benefit3">Increased opportunities to connect with students and grow your teaching profile.</li>
+      </ul>
+    </div>
+
+    <div>
+      <p id="howToSubscribe"><strong>How to Subscribe:</strong></p>
+      <p id="step1">1. Choose a subscription plan (8 weeks or 1 year).</p>
+      <p id="step2">2. Make a payment for your selected plan, and we will activate your subscription.</p>
+      <p id="contactInfo">If you have any questions, feel free to contact us through the support section.</p>
+    </div>
+
+    <a href="payment.html">
+      <button class="modern-button" id="subscribeBtn">Subscribe Now</button>
+    </a>
+  </div>
+
+  <script>
+    let isArabic = false;
+
+    function toggleLanguage() {
+      isArabic = !isArabic;
+      if (isArabic) {
+        document.documentElement.lang = "ar";
+        document.documentElement.dir = "rtl";
+
+        document.getElementById("title").innerText = "اشتراك المعلم";
+        document.getElementById("intro").innerText = "مرحبًا بك في منصتنا! لضمان ظهور ملفك الشخصي للطلاب، نطلب منك الاشتراك. يمكنك اختيار من بين خطط الاشتراك المختلفة:";
+        document.getElementById("subDetails").innerText = "تفاصيل الاشتراك:";
+        document.getElementById("duration").innerText = "المدة: 8 أسابيع";
+        document.getElementById("cost").innerText = "التكلفة: 50 درهم";
+        document.getElementById("duration1").innerText = "المدة: 1 سنة";
+        document.getElementById("cost1").innerText = "التكلفة: 250 درهم";
+        document.getElementById("benefitsTitle").innerText = "فوائد الاشتراك تشمل:";
+        document.getElementById("benefit1").innerText = "الظهور على المنصة ليتمكن الطلاب من العثور على الدروس وحجزها.";
+        document.getElementById("benefit2").innerText = "الوصول لتحديث ملفك الشخصي وإضافة أوقات الدروس وتوافرها.";
+        document.getElementById("benefit3").innerText = "زيادة الفرص للتواصل مع الطلاب وتوسيع ملفك التدريسي.";
+        document.getElementById("howToSubscribe").innerText = "كيفية الاشتراك:";
+        document.getElementById("step1").innerText = "1. اختر خطة الاشتراك (8 أسابيع أو سنة واحدة).";
+        document.getElementById("step2").innerText = "2. قم بإجراء الدفع للخطة المختارة، وسنقوم بتفعيل اشتراكك.";
+        document.getElementById("contactInfo").innerText = "إذا كان لديك أي أسئلة، لا تتردد في التواصل معنا عبر قسم الدعم.";
+        document.getElementById("subscribeBtn").innerText = "اشترك الآن";
+        document.getElementById("toggleLang").innerText = "Switch to English";
+      } else {
+        document.documentElement.lang = "en";
+        document.documentElement.dir = "ltr";
+
+        document.getElementById("title").innerText = "Teacher Subscription";
+        document.getElementById("intro").innerText = "Welcome to our platform! To ensure that your profile is visible to students, we require a subscription. You can choose from different subscription plans:";
+        document.getElementById("subDetails").innerText = "Subscription Details:";
+        document.getElementById("duration").innerText = "Duration: 8 weeks";
+        document.getElementById("cost").innerText = "Cost: 50 AED";
+        document.getElementById("duration1").innerText = "Duration: 1 year";
+        document.getElementById("cost1").innerText = "Cost: 250 AED";
+        document.getElementById("benefitsTitle").innerText = "Subscription benefits include:";
+        document.getElementById("benefit1").innerText = "Visibility on the platform for students to find and book lessons.";
+        document.getElementById("benefit2").innerText = "Access to update your profile and add lesson times and availability.";
+        document.getElementById("benefit3").innerText = "Increased opportunities to connect with students and grow your teaching profile.";
+        document.getElementById("howToSubscribe").innerText = "How to Subscribe:";
+        document.getElementById("step1").innerText = "1. Choose a subscription plan (8 weeks or 1 year).";
+        document.getElementById("step2").innerText = "2. Make a payment for your selected plan, and we will activate your subscription.";
+        document.getElementById("contactInfo").innerText = "If you have any questions, feel free to contact us through the support section.";
+        document.getElementById("subscribeBtn").innerText = "Subscribe Now";
+        document.getElementById("toggleLang").innerText = "Switch to العربية";
+      }
+    }
+  </script>
+</body>
+</html>

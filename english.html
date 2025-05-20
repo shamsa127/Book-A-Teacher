@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>English Teachers</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #C9E4DE;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #007acc;
+      margin-bottom: 30px;
+    }
+
+    .teacher-card {
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin: 20px auto;
+      max-width: 500px;
+      text-align: left;
+    }
+
+    .teacher-name {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .teacher-grade {
+      font-size: 1em;
+      color: #555;
+      margin: 10px 0;
+    }
+
+    .teacher-location {
+      font-size: 1em;
+      color: #777;
+      margin: 10px 0;
+    }
+
+    .chat-button {
+      background-color: #FAEDCB;
+      color: black;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    .chat-button:hover {
+      background-color: #F5D09A;
+    }
+
+    .language-toggle, .go-back-button {
+      position: absolute;
+      top: 20px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #0077cc;
+      cursor: pointer;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    .language-toggle {
+      right: 20px;
+      background-color: white;
+    }
+
+    .language-toggle:hover, .go-back-button:hover {
+      background-color: #d0ebff;
+    }
+
+    .go-back-button {
+      left: 20px;
+      background-color: #FAEDCB;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="go-back-button" onclick="goBack()">
+    <span id="goBackBtnText">Go Back</span>
+  </button>
+
+  <button class="language-toggle" onclick="toggleLanguage()" id="langToggleBtn">عربي</button>
+  <h1 id="page-title">English Teachers</h1>
+
+  <div id="teachers-container"></div>
+
+  <script>
+    let isArabic = false;
+
+    function getApprovedTeachersForSubject(subject) {
+      const allTeachers = JSON.parse(localStorage.getItem("approvedTeachers")) || [];
+      return allTeachers.filter(t => t.subject === subject);
+    }
+
+    function renderTeachers(subject) {
+      const container = document.getElementById("teachers-container");
+      container.innerHTML = "";
+
+      const teachers = getApprovedTeachersForSubject(subject);
+      if (teachers.length === 0) {
+        const msg = document.createElement("p");
+        msg.innerText = isArabic ? "لا يوجد معلمين حالياً." : "No teachers available currently.";
+        container.appendChild(msg);
+        return;
+      }
+
+      teachers.forEach((teacher, index) => {
+        const card = document.createElement("div");
+        card.className = "teacher-card";
+
+        const name = document.createElement("div");
+        name.className = "teacher-name";
+        name.innerText = isArabic ? (teacher.gender === "female" ? "المعلمة " : "الاستاذ ") + teacher.name : (teacher.gender === "female" ? "Ms. " : "Mr. ") + teacher.name;
+        card.appendChild(name);
+
+        const grade = document.createElement("div");
+        grade.className = "teacher-grade";
+        grade.innerText = isArabic ? `الصف: ${teacher.grade}` : `Grade: ${teacher.grade}`;
+        card.appendChild(grade);
+
+        const location = document.createElement("div");
+        location.className = "teacher-location";
+        location.innerText = isArabic ? "عن بعد و حضوري" : "Online & In-Person";
+        card.appendChild(location);
+
+        const chatBtn = document.createElement("button");
+        chatBtn.className = "chat-button";
+        chatBtn.innerText = isArabic ? "محادثة" : "Chat";
+        chatBtn.onclick = () => startChat((teacher.gender === "female" ? "Ms. " : "Mr. ") + teacher.name);
+        card.appendChild(chatBtn);
+
+        container.appendChild(card);
+      });
+    }
+
+    function startChat(teacherName) {
+      const chat = {
+        teacher: teacherName,
+        time: new Date().toLocaleString()
+      };
+
+      const existingChats = JSON.parse(localStorage.getItem("chats")) || [];
+      existingChats.push(chat);
+      localStorage.setItem("chats", JSON.stringify(existingChats));
+
+      window.location.href = `chat.html?teacher=${encodeURIComponent(teacherName)}`;
+    }
+
+    function toggleLanguage() {
+      isArabic = !isArabic;
+      document.documentElement.lang = isArabic ? "ar" : "en";
+      document.documentElement.dir = isArabic ? "rtl" : "ltr";
+
+      document.getElementById("langToggleBtn").innerText = isArabic ? "English" : "عربي";
+      document.getElementById("page-title").innerText = isArabic ? "معلمين اللغة الإنجليزية" : "English Teachers";
+      document.getElementById("goBackBtnText").innerText = isArabic ? "الرجوع" : "Go Back";
+
+      renderTeachers("English");
+    }
+
+    function goBack() {
+      window.location.href = "all-subjects.html";
+    }
+
+    // On load
+    renderTeachers("English");
+  </script>
+
+</body>
+</html>

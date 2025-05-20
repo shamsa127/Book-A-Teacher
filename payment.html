@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #C9E4DE;
+      margin: 0;
+      padding: 20px;
+      direction: ltr;
+    }
+
+    .lang-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #FAEDCB;
+      color: black;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 80px auto 0 auto;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    select, input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+
+    .info-box {
+      background-color: #f5f5f5;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .submit-btn {
+      background-color: #FAEDCB;
+      color: black;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .arabic {
+      direction: rtl;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <button class="lang-toggle" onclick="toggleLanguage()" id="langBtn">عربي</button>
+
+  <div class="container" id="container">
+    <h2 id="title">Payment</h2>
+
+    <label for="plan" id="planLabel">Select Subscription</label>
+    <select id="plan" onchange="showInfo()">
+      <option value="">-- Select --</option>
+      <option value="8weeks" id="opt8">8 Weeks - 50 AED</option>
+      <option value="1year" id="opt12">1 Year - 250 AED</option>
+    </select>
+
+    <div class="info-box" id="paymentInfo">
+      <p><strong>Bank Name:</strong> ADIB (Abu Dhabi Islamic Bank)</p>
+      <p><strong>IBAN:</strong> AE250500000000029268401</p>
+    </div>
+
+    <label for="receipt" id="uploadLabel">Upload Payment Receipt</label>
+    <input type="file" id="receipt" accept="image/*,application/pdf" />
+
+    <button class="submit-btn" onclick="submitPayment()" id="submitBtn">Submit Payment</button>
+  </div>
+
+  <script>
+    let isArabic = false;
+
+    function toggleLanguage() {
+      isArabic = !isArabic;
+      const container = document.getElementById("container");
+      document.body.classList.toggle("arabic", isArabic);
+      container.classList.toggle("arabic", isArabic);
+
+      document.getElementById("langBtn").textContent = isArabic ? "English" : "عربي";
+      document.getElementById("title").textContent = isArabic ? "الدفع" : "Payment";
+      document.getElementById("planLabel").textContent = isArabic ? "اختر الاشتراك" : "Select Subscription";
+      document.getElementById("plan").options[0].text = isArabic ? "-- اختر --" : "-- Select --";
+      document.getElementById("opt8").textContent = isArabic ? "8 أسابيع - 50 درهم" : "8 Weeks - 50 AED";
+      document.getElementById("opt12").textContent = isArabic ? "سنة واحدة - 250 درهم" : "1 Year - 250 AED";
+      document.getElementById("uploadLabel").textContent = isArabic ? "ارفع إيصال الدفع" : "Upload Payment Receipt";
+      document.getElementById("submitBtn").textContent = isArabic ? "إرسال الدفع" : "Submit Payment";
+      document.getElementById("paymentInfo").innerHTML = isArabic
+        ? "<p><strong>اسم البنك:</strong> مصرف أبوظبي الإسلامي (ADIB)</p><p><strong>الآيبان:</strong> AE250500000000029268401</p>"
+        : "<p><strong>Bank Name:</strong> ADIB (Abu Dhabi Islamic Bank)</p><p><strong>IBAN:</strong> AE250500000000029268401</p>";
+    }
+
+    function showInfo() {
+      const plan = document.getElementById("plan").value;
+      const infoBox = document.getElementById("paymentInfo");
+      infoBox.style.display = plan ? "block" : "none";
+    }
+
+    function submitPayment() {
+      const plan = document.getElementById("plan").value;
+      const receipt = document.getElementById("receipt").files[0];
+      if (!plan || !receipt) {
+        alert(isArabic ? "يرجى اختيار خطة ورفع الإيصال." : "Please select a plan and upload the receipt.");
+        return;
+      }
+      alert(isArabic ? "تم إرسال الدفع بنجاح!" : "Payment submitted successfully!");
+      window.location.href = "index.html"; // Redirect to index.html after success
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Subjects</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #C9E4DE;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      color: #007acc;
+    }
+
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .subject-card {
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      font-weight: bold;
+      text-decoration: none;
+      color: #007acc;
+      transition: background-color 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .subject-card img {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 10px;
+    }
+
+    .subject-card:hover {
+      background-color: #b5d4ca;
+    }
+
+    .language-toggle,
+    .back-button {
+      position: absolute;
+      top: 20px;
+      padding: 8px 14px;
+      background-color: #FAEDCB;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #0077cc;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+      text-decoration: none;
+    }
+
+    .language-toggle:hover,
+    .back-button:hover {
+      background-color: #e9d5a8;
+    }
+
+    .language-toggle {
+      right: 20px;
+    }
+
+    .back-button {
+      left: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="index.html" class="back-button" id="backBtn">← Go Back</a>
+  <button class="language-toggle" onclick="toggleLanguage()" id="langToggleBtn">عربي</button>
+
+  <h1 id="page-title">Subjects</h1>
+
+  <div class="subject-grid">
+    <a href="physics.html" class="subject-card" id="physics">
+      <img src="https://cdn-icons-png.flaticon.com/512/5205/5205156.png" alt="Physics Icon">
+      Physics
+    </a>
+    <a href="mathematics.html" class="subject-card" id="mathematics">
+      <img src="https://cdn-icons-png.flaticon.com/512/7514/7514377.png" alt="Math Icon">
+      Mathematics
+    </a>
+    <a href="biology.html" class="subject-card" id="biology">
+      <img src="https://cdn-icons-png.flaticon.com/512/1741/1741986.png" alt="Biology Icon">
+      Biology
+    </a>
+    <a href="chemistry.html" class="subject-card" id="chemistry">
+      <img src="https://cdn-icons-png.flaticon.com/512/995/995446.png" alt="Chemistry Icon">
+      Chemistry
+    </a>
+    <a href="science.html" class="subject-card" id="science">
+      <img src="https://cdn-icons-png.flaticon.com/512/18005/18005633.png" alt="Science Icon">
+      Science
+    </a>
+    <a href="arabic.html" class="subject-card" id="arabic">
+      <img src="https://cdn-icons-png.flaticon.com/512/10297/10297558.png" alt="Arabic Icon">
+      Arabic
+    </a>
+    <a href="english.html" class="subject-card" id="english">
+      <img src="https://cdn-icons-png.flaticon.com/512/13166/13166944.png" alt="English Icon">
+      English
+    </a>
+    <a href="french.html" class="subject-card" id="french">
+      <img src="https://cdn-icons-png.flaticon.com/512/4937/4937884.png" alt="French Icon">
+      French
+    </a>
+    <a href="chinese.html" class="subject-card" id="chinese">
+      <img src="https://cdn-icons-png.flaticon.com/512/1493/1493388.png" alt="Chinese Icon">
+      Chinese
+    </a>
+    <a href="islamic-studies.html" class="subject-card" id="islamic">
+      <img src="https://cdn-icons-png.flaticon.com/512/12858/12858526.png" alt="Islamic Studies Icon">
+      Islamic Studies
+    </a>
+  </div>
+
+  <script>
+    let isArabic = false;
+
+    function toggleLanguage() {
+      isArabic = !isArabic;
+      document.documentElement.lang = isArabic ? "ar" : "en";
+      document.documentElement.dir = isArabic ? "rtl" : "ltr";
+
+      document.getElementById("langToggleBtn").innerText = isArabic ? "English" : "عربي";
+      document.getElementById("page-title").innerText = isArabic ? "المواد الدراسية" : "Subjects";
+      document.getElementById("backBtn").innerText = isArabic ? "← العودة" : "← Go Back";
+
+      document.getElementById("physics").lastChild.textContent = isArabic ? "الفيزياء" : "Physics";
+      document.getElementById("mathematics").lastChild.textContent = isArabic ? "الرياضيات" : "Mathematics";
+      document.getElementById("biology").lastChild.textContent = isArabic ? "الأحياء" : "Biology";
+      document.getElementById("chemistry").lastChild.textContent = isArabic ? "الكيمياء" : "Chemistry";
+      document.getElementById("science").lastChild.textContent = isArabic ? "العلوم" : "Science";
+      document.getElementById("arabic").lastChild.textContent = isArabic ? "اللغة العربية" : "Arabic";
+      document.getElementById("english").lastChild.textContent = isArabic ? "اللغة الإنجليزية" : "English";
+      document.getElementById("french").lastChild.textContent = isArabic ? "اللغة الفرنسية" : "French";
+      document.getElementById("chinese").lastChild.textContent = isArabic ? "اللغة الصينية" : "Chinese";
+      document.getElementById("islamic").lastChild.textContent = isArabic ? "الدراسات الإسلامية" : "Islamic Studies";
+    }
+  </script>
+
+</body>
+</html>

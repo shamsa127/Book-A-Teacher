@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chinese Teachers</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #C9E4DE;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .language-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 14px;
+      background-color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #0077cc;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    .language-toggle:hover {
+      background-color: #d0ebff;
+    }
+
+    h1 {
+      text-align: center;
+      color: #005fa3;
+    }
+
+    .teacher-card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 10px auto;
+      max-width: 400px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: left;
+    }
+
+    .teacher-card h2 {
+      margin: 0 0 10px 0;
+      color: #007acc;
+    }
+
+    .teacher-card p {
+      margin: 5px 0;
+    }
+
+    .chat-button {
+      background-color: #FAEDCB;
+      color: #333;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .chat-button:hover {
+      background-color: #e1d08e;
+    }
+
+    .go-back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 8px 14px;
+      background-color: #FAEDCB;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #0077cc;
+      cursor: pointer;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    .go-back-button:hover {
+      background-color: #d0ebff;
+    }
+  </style>
+</head>
+<body>
+  <!-- Go Back Button -->
+  <button class="go-back-button" onclick="goBack()">
+    <span id="goBackBtnText">Go Back</span>
+  </button>
+
+  <button class="language-toggle" onclick="toggleLanguage()" id="langToggleBtn">عربي</button>
+  <h1 id="pageTitle">Chinese Teachers</h1>
+
+  <div id="teacherList"></div>
+
+  <script>
+    let isArabic = false;
+    const teacherList = document.getElementById("teacherList");
+
+    // Load approved teachers from localStorage (should be set by your admin approval process)
+    // Example format:
+    // [
+    //   {name: "Ms. Li", grade: "9", email: "li@example.com", subject: "Chinese"},
+    //   {name: "Mr. Zhang", grade: "11", email: "zhang@example.com", subject: "Chinese"},
+    //   {name: "Ms. Fatima", grade: "10", email: "fatima@example.com", subject: "Mathematics"}
+    // ]
+    const storedTeachers = JSON.parse(localStorage.getItem("teachers")) || [];
+
+    // Display only teachers for the "Chinese" subject (case-insensitive)
+    function displayTeachers() {
+      teacherList.innerHTML = "";
+      // Change "chinese" here to "mathematics" or any other subject you want to filter
+      const subjectFilter = "chinese";
+
+      const filteredTeachers = storedTeachers.filter(t =>
+        t.subject.toLowerCase().trim() === subjectFilter
+      );
+
+      if (filteredTeachers.length === 0) {
+        teacherList.innerHTML = `<p style='text-align:center;'>${isArabic ? "لا يوجد معلمين للغة الصينية بعد." : "No Chinese teachers available yet."}</p>`;
+      } else {
+        filteredTeachers.forEach(teacher => {
+          const card = document.createElement("div");
+          card.className = "teacher-card";
+          card.innerHTML = `
+            <h2>${isArabic ? "معلم:" : "Teacher:"} ${teacher.name}</h2>
+            <p><strong>${isArabic ? "الصف:" : "Grade:"}</strong> ${teacher.grade}</p>
+            <p><strong>${isArabic ? "البريد الإلكتروني:" : "Email:"}</strong> ${teacher.email}</p>
+            <p><strong>${isArabic ? "طريقة الحجز:" : "Booking Method:"}</strong> ${isArabic ? "عن بعد و حضوري" : "Online & In-person"}</p>
+            <button class="chat-button" onclick="startChat('${teacher.name}')">
+              ${isArabic ? "محادثة" : "Chat"}
+            </button>
+          `;
+          teacherList.appendChild(card);
+        });
+      }
+    }
+
+    // Add the teacher to the chats list in localStorage, then redirect to chat page
+    function startChat(name) {
+      let currentChats = JSON.parse(localStorage.getItem("chats")) || [];
+      if (!currentChats.includes(name)) {
+        currentChats.push(name);
+        localStorage.setItem("chats", JSON.stringify(currentChats));
+      }
+      window.location.href = `chat.html?teacher=${encodeURIComponent(name)}`;
+    }
+
+    // Language toggle between English and Arabic
+    function toggleLanguage() {
+      isArabic = !isArabic;
+      document.documentElement.lang = isArabic ? "ar" : "en";
+      document.documentElement.dir = isArabic ? "rtl" : "ltr";
+
+      document.getElementById("langToggleBtn").innerText = isArabic ? "English" : "عربي";
+      document.getElementById("pageTitle").innerText = isArabic ? "معلمين اللغة الصينية" : "Chinese Teachers";
+      document.getElementById("goBackBtnText").innerText = isArabic ? "الرجوع" : "Go Back";
+
+      displayTeachers();
+    }
+
+    // Go back button behavior
+    function goBack() {
+      window.location.href = "all-subjects.html";
+    }
+
+    // Initial display on page load
+    displayTeachers();
+  </script>
+</body>
+</html>
