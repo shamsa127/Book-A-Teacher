@@ -22,7 +22,7 @@
       padding: 20px;
     }
 
-    .header {
+    .whatsapp-header {
       background-color: #FAEDCB;
       padding: 18px;
       font-size: 22px;
@@ -81,7 +81,9 @@
 </head>
 <body>
   <div class="container">
-    <div class="header">Book a Lesson</div>
+    <div class="whatsapp-header">
+      📱 WhatsApp: <a href="https://wa.me/971500000000" target="_blank">+971 50 000 0000</a>
+    </div>
 
     <div class="form-section" id="bookingForm">
       <label for="duration">⏱️ Duration:</label>
@@ -216,21 +218,15 @@
 
       document.getElementById("bookingForm").classList.add("hidden");
 
-      const teacher = JSON.parse(localStorage.getItem("teacherInfo"));
+      const message = `Hello, I booked a session for ${date} at ${time}.`;
       const whatsappDiv = document.getElementById("whatsappContact");
       whatsappDiv.classList.remove("hidden");
-
-      if (teacher) {
-        const message = `Hello ${teacher.name}, I booked a session for ${date} at ${time}.`;
-        whatsappDiv.innerHTML =
-          `✅ Booking Confirmed!<br/>
-          Contact your teacher <strong>${teacher.name}</strong> via WhatsApp:<br/>
-          <a href="https://wa.me/${teacher.number}?text=${encodeURIComponent(message)}" target="_blank">
-            ${teacher.number} 📞
-          </a>`;
-      } else {
-        whatsappDiv.innerHTML = "⚠️ No teacher contact found. Please sign up first.";
-      }
+      whatsappDiv.innerHTML =
+        `✅ Booking Confirmed!<br/>
+        Contact your teacher via WhatsApp:<br/>
+        <a href="https://wa.me/971500000000?text=${encodeURIComponent(message)}" target="_blank">
+          +971 50 000 0000 📞
+        </a>`;
     }
 
     function checkBookingStatus() {
