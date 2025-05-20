@@ -72,7 +72,8 @@
       font-size: 16px;
     }
 
-    .whatsapp-message span {
+    .whatsapp-message a {
+      text-decoration: none;
       color: green;
       font-weight: bold;
     }
@@ -220,11 +221,13 @@
       whatsappDiv.classList.remove("hidden");
 
       if (teacher) {
-        whatsappDiv.innerHTML = `
-          ✅ Booking Confirmed!<br/>
+        const message = `Hello ${teacher.name}, I booked a session for ${date} at ${time}.`;
+        whatsappDiv.innerHTML =
+          `✅ Booking Confirmed!<br/>
           Contact your teacher <strong>${teacher.name}</strong> via WhatsApp:<br/>
-          <span>${teacher.number} 📞</span>
-        `;
+          <a href="https://wa.me/${teacher.number}?text=${encodeURIComponent(message)}" target="_blank">
+            ${teacher.number} 📞
+          </a>`;
       } else {
         whatsappDiv.innerHTML = "⚠️ No teacher contact found. Please sign up first.";
       }
