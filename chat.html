@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Book a Session with Ms. Sara</title>
+  <title>Book a Lesson</title>
   <style>
     body {
       background-color: #C9E4DE;
@@ -16,48 +16,43 @@
       max-width: 600px;
       margin: 40px auto;
       background: white;
-      border-radius: 16px;
+      border-radius: 20px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-      padding: 30px;
+      overflow: hidden;
+      padding: 20px;
     }
 
-    h1 {
-      text-align: center;
+    .header {
       background-color: #FAEDCB;
-      padding: 16px;
-      border-radius: 12px;
-      font-size: 24px;
+      padding: 18px;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      border-radius: 20px 20px 0 0;
     }
 
-    label {
+    .form-section label {
       font-weight: bold;
       margin-top: 15px;
       display: block;
     }
 
-    select,
-    input[type="text"] {
+    .form-section select,
+    .form-section input[type="text"] {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin-top: 5px;
-      border-radius: 10px;
+      border-radius: 12px;
       border: 1px solid #CCC;
       font-size: 14px;
     }
 
-    .price {
-      font-size: 16px;
-      margin-top: 10px;
-      font-weight: bold;
-      color: #333;
-    }
-
-    button {
+    .form-section button {
       background-color: #FAEDCB;
       color: black;
       border: none;
       padding: 12px;
-      border-radius: 12px;
+      border-radius: 16px;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
@@ -65,83 +60,109 @@
       width: 100%;
     }
 
-    button:hover {
-      background-color: #f2dfb0;
+    .form-section .hidden {
+      display: none;
     }
 
-    #whatsappLink {
-      background-color: #25D366;
-      color: white;
-      text-align: center;
-      padding: 12px;
-      border-radius: 12px;
-      text-decoration: none;
-      display: none;
+    .whatsapp-message {
       margin-top: 20px;
-      font-weight: bold;
+      padding: 15px;
+      background-color: #F0F0F0;
+      border-radius: 12px;
+      font-size: 16px;
     }
 
-    .hidden {
-      display: none;
+    .whatsapp-message a {
+      text-decoration: none;
+      color: green;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Book a Session with Ms. Sara 📚</h1>
+    <div class="header">Book a Lesson</div>
 
-    <label for="duration">⏱️ Duration:</label>
-    <select id="duration" onchange="updatePrice()">
-      <option value="60">60 Minutes</option>
-      <option value="90">90 Minutes</option>
-      <option value="120">120 Minutes</option>
-    </select>
-    <p class="price" id="priceDisplay">💵 Price: 125 AED</p>
-
-    <label for="lessonDate">📅 Select Date:</label>
-    <select id="lessonDate" onchange="updateTimes()"></select>
-
-    <label for="lessonTime">🕒 Select Time:</label>
-    <select id="lessonTime"></select>
-
-    <label for="sessionType">📍 Session Type:</label>
-    <select id="sessionType" onchange="toggleSessionOptions()">
-      <option value="">Choose</option>
-      <option value="online">Online 📱</option>
-      <option value="in-person">In-Person 🏡</option>
-    </select>
-
-    <div id="locationDiv" class="hidden">
-      <label for="locationLink">📍 Drop Your Location Link:</label>
-      <input type="text" id="locationLink" placeholder="Paste location link here">
-
-      <label for="paymentMethod">💳 Payment Method:</label>
-      <select id="paymentMethod" onchange="handlePaymentMethod()">
-        <option value="">Choose</option>
-        <option value="cash">Cash 💰</option>
-        <option value="card">Card 💳</option>
+    <div class="form-section" id="bookingForm">
+      <label for="duration">⏱️ Duration:</label>
+      <select id="duration">
+        <option value="60">60 Minutes</option>
+        <option value="120">120 Minutes</option>
+        <option value="180">180 Minutes</option>
       </select>
+
+      <label for="lessonDate">📅 Select Date:</label>
+      <select id="lessonDate" onchange="updateTimes()"></select>
+
+      <label for="lessonTime">🕒 Select Time:</label>
+      <select id="lessonTime"></select>
+
+      <label for="sessionType">📍 Session Type:</label>
+      <select id="sessionType" onchange="toggleSessionOptions()">
+        <option value="">Choose</option>
+        <option value="online">Online 📱</option>
+        <option value="in-person">In-Person 🏡</option>
+      </select>
+
+      <div id="locationDiv" class="hidden">
+        <label for="locationLink">📍 Drop Your Location Link:</label>
+        <input type="text" id="locationLink" placeholder="Paste location link here">
+
+        <label for="paymentMethod">💳 Payment Method:</label>
+        <select id="paymentMethod" onchange="handlePaymentMethod()">
+          <option value="">Choose</option>
+          <option value="cash">Cash 💰</option>
+          <option value="card">Card 💳</option>
+        </select>
+      </div>
+
+      <div id="cardPaymentDiv" class="hidden">
+        <p><strong>🏦 Bank:</strong> <span id="bankName">—</span></p>
+        <p><strong>🔢 IBAN:</strong> <span id="ibanNumber">—</span></p>
+      </div>
+
+      <button onclick="confirmBooking()">Confirm Booking ✅</button>
     </div>
 
-    <div id="cardPaymentDiv" class="hidden">
-      <p><strong>🏦 Bank:</strong> Teacher Bank</p>
-      <p><strong>🔢 IBAN:</strong> AE000000000000000000000</p>
-    </div>
-
-    <button onclick="confirmBooking()">Confirm Booking ✅</button>
-    <a href="https://wa.me/971500000000" id="whatsappLink" target="_blank">💬 Contact Ms. Sara on WhatsApp</a>
+    <div id="whatsappContact" class="whatsapp-message hidden"></div>
   </div>
 
   <script>
-    const priceMap = {
-      60: 125,
-      90: 150,
-      120: 175
-    };
+    let bookingEndTime = null;
 
-    function updatePrice() {
-      const duration = document.getElementById("duration").value;
-      document.getElementById("priceDisplay").textContent = `💵 Price: ${priceMap[duration]} AED`;
+    function toggleSessionOptions() {
+      const sessionType = document.getElementById('sessionType').value;
+      const locationDiv = document.getElementById('locationDiv');
+      const cardPaymentDiv = document.getElementById('cardPaymentDiv');
+      const bankName = document.getElementById('bankName');
+      const ibanNumber = document.getElementById('ibanNumber');
+
+      if (sessionType === "in-person") {
+        locationDiv.classList.remove("hidden");
+        cardPaymentDiv.classList.add("hidden");
+      } else if (sessionType === "online") {
+        locationDiv.classList.add("hidden");
+        cardPaymentDiv.classList.remove("hidden");
+        bankName.textContent = "Teacher Bank";
+        ibanNumber.textContent = "AE000000000000000000000";
+      } else {
+        locationDiv.classList.add("hidden");
+        cardPaymentDiv.classList.add("hidden");
+      }
+    }
+
+    function handlePaymentMethod() {
+      const method = document.getElementById('paymentMethod').value;
+      const cardPaymentDiv = document.getElementById('cardPaymentDiv');
+      const bankName = document.getElementById('bankName');
+      const ibanNumber = document.getElementById('ibanNumber');
+      if (method === "card") {
+        cardPaymentDiv.classList.remove("hidden");
+        bankName.textContent = "Teacher Bank";
+        ibanNumber.textContent = "AE000000000000000000000";
+      } else {
+        cardPaymentDiv.classList.add("hidden");
+      }
     }
 
     function updateTimes() {
@@ -171,35 +192,8 @@
       updateTimes();
     }
 
-    function toggleSessionOptions() {
-      const sessionType = document.getElementById('sessionType').value;
-      const locationDiv = document.getElementById('locationDiv');
-      const cardPaymentDiv = document.getElementById('cardPaymentDiv');
-
-      if (sessionType === "in-person") {
-        locationDiv.classList.remove("hidden");
-        cardPaymentDiv.classList.add("hidden");
-      } else if (sessionType === "online") {
-        locationDiv.classList.add("hidden");
-        cardPaymentDiv.classList.remove("hidden");
-      } else {
-        locationDiv.classList.add("hidden");
-        cardPaymentDiv.classList.add("hidden");
-      }
-    }
-
-    function handlePaymentMethod() {
-      const method = document.getElementById('paymentMethod').value;
-      const cardPaymentDiv = document.getElementById('cardPaymentDiv');
-      if (method === "card") {
-        cardPaymentDiv.classList.remove("hidden");
-      } else {
-        cardPaymentDiv.classList.add("hidden");
-      }
-    }
-
     function confirmBooking() {
-      const duration = document.getElementById('duration').value;
+      const duration = parseInt(document.getElementById('duration').value);
       const date = document.getElementById('lessonDate').value;
       const time = document.getElementById('lessonTime').value;
       const sessionType = document.getElementById('sessionType').value;
@@ -209,12 +203,53 @@
         return;
       }
 
-      alert(`📚 Booking Confirmed:\n${duration} mins on ${date} at ${time} (${sessionType})`);
-      document.getElementById("whatsappLink").style.display = "block";
+      const timeParts = time.split(/[: ]/);
+      let hour = parseInt(timeParts[0]);
+      const minute = parseInt(timeParts[1]);
+      if (timeParts[2] === "PM" && hour < 12) hour += 12;
+      if (timeParts[2] === "AM" && hour === 12) hour = 0;
+
+      const endTime = new Date(date + "T" + hour.toString().padStart(2, "0") + ":" + minute.toString().padStart(2, "0") + ":00");
+      endTime.setMinutes(endTime.getMinutes() + duration);
+      bookingEndTime = endTime;
+      localStorage.setItem("bookingEndTime", bookingEndTime.toISOString());
+
+      document.getElementById("bookingForm").classList.add("hidden");
+
+      const teacher = JSON.parse(localStorage.getItem("teacherInfo"));
+      const whatsappDiv = document.getElementById("whatsappContact");
+      whatsappDiv.classList.remove("hidden");
+
+      if (teacher) {
+        const message = `Hello ${teacher.name}, I booked a session for ${date} at ${time}.`;
+        whatsappDiv.innerHTML = `
+          ✅ Booking Confirmed!<br/>
+          Contact your teacher <strong>${teacher.name}</strong> via WhatsApp:<br/>
+          <a href="https://wa.me/${teacher.number}?text=${encodeURIComponent(message)}" target="_blank">
+            ${teacher.number} 📞
+          </a>
+        `;
+      } else {
+        whatsappDiv.innerHTML = "⚠️ No teacher contact found. Please sign up first.";
+      }
+    }
+
+    function checkBookingStatus() {
+      const storedTime = localStorage.getItem("bookingEndTime");
+      if (storedTime) {
+        const now = new Date();
+        const endTime = new Date(storedTime);
+        if (now >= endTime) {
+          localStorage.removeItem("bookingEndTime");
+          document.getElementById("bookingForm").classList.remove("hidden");
+          document.getElementById("whatsappContact").classList.add("hidden");
+        }
+      }
     }
 
     populateDates();
-    updatePrice();
+    checkBookingStatus();
+    setInterval(checkBookingStatus, 60000);
   </script>
 </body>
 </html>
