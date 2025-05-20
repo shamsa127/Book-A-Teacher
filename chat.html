@@ -225,8 +225,9 @@
         whatsappDiv.innerHTML = `
           ✅ Booking Confirmed!<br/>
           Contact your teacher <strong>${teacher.name}</strong> via WhatsApp:<br/>
+          <strong>📞 ${teacher.number}</strong><br/><br/>
           <a href="https://wa.me/${teacher.number}?text=${encodeURIComponent(message)}" target="_blank">
-            ${teacher.number} 📞
+            Click here to send a WhatsApp message
           </a>
         `;
       } else {
